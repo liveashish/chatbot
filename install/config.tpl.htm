@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Program O Installation</title>
+    <link rel="stylesheet" href="../admin/style.css" type="text/css" />
+  </head>
+  <body>
+    <div id="logo">&nbsp;</div>
+    <div id="title">
+      <div id="titlespan">
+        Program O Installation - [title]
+        <div class="ul"></div>
+        <div class="ll"></div>
+        <div class="ur"></div>
+        <div class="lr"></div>
+      </div>
+    </div>[cr6]
+ <!-- Section Header End -->
+<!-- Section container Start -->
+      <div id="container">
+        [mainPanel]
+        <div id="leftWarning" class="floatLeft bold red"></div>
+        <div id="rightWarning" class="floatRight bold red"></div>
+      </div>[cr4]
+<!-- Section container End -->
+<!-- Section Footer Start -->
+    <div class="spacer">&nbsp;</div>
+<!-- Section Footer End -->
+<!-- Section jQuery1 Start -->
+    <script type="text/javascript" src="../scripts/tzDetect.js"></script>
+    <script type="text/javascript" src="../scripts/jquery.js"></script>
+    <script type="text/javascript" src="../scripts/jquery.selectboxes.js"></script>
+    <script type="text/javascript" src="../scripts/jquery.validate.js"></script>
+    <script type="text/javascript">
+      var rsTzVal = '[rsTZ]';
+      var lsHn     = '[local_dbh]';
+      var rsHn     = '[remotehost]';
+      var domain_name = '[domain_name]';
+      var rowHeight = 16.5;
+      var url = 'about:blank';
+      var helpWindow = null; // global variable
+      $(function() {
+        var sWidth = $(window).width();
+        $('#sWidth').val(sWidth);
+        if ( $.browser.msie ) {
+          rowHeight = 16.2;
+          $('#botNames').css('height', '21px');
+        }
+        $('#generalConfig input:text').focus(function() {
+          if ($(this).val() == "Required" || $(this).val() == "Optional") {
+            $(this).val('');
+          }
+        });
+        $('[panel]').show();
+        buildSelect('lsTZ');
+        buildSelect('rsTZ');
+        $('#bot_count').val('1');
+        $('#botNames').val("myBot\n");
+        $('#default_bot_id').addOption('1', 'myBot');
+        $('#default_save_stateSession').attr('checked', true);
+        $('#bot_count').change(function() {
+          //var txt = document
+          var num = $('#bot_count').val();
+          var myVal = '';
+          var n;
+          if (isNaN(num) || num < 1) num = 1;
+          var sTmpBotNames  = $('#botNames').val();
+          var botArray = sTmpBotNames.split("\n");
+          var namedBotCount = botArray.length;
+          var curBot;
+          if (num == 1) {
+            myVal = botArray[0];
+            //alert('tmpBotName = ' + tmpBotName);
+            $('#default_bot_id').removeOption(/./);
+            $('#default_bot_id').addOption(1, myVal);
+          }
+          else {
+            for (n = 1; n < num; n++) {
+              curBot = (n < namedBotCount) ? botArray[n-1] : 'Bot' + n;
+              myVal += curBot + "\n";
+              $('#default_bot_id').addOption(n, curBot);
+            }
+            myVal += 'Bot' + num;
+            $('#default_bot_id').addOption(num, 'Bot' + num);
+          }
+          var testNum = (Math.round(num * rowHeight) + 3) + 'px';
+          $('#botNames').val(myVal);
+          $('#default_bot_id').selectOptions('1');
+          $('#botNames').css('height', testNum);
+        });
+        $('#local_dbh').focus(function() {
+          if ($(this).val() == lsHn) $(this).val('');
+        });
+        $('#domain_name').focus(function() {
+          if ($(this).val() == domain_name) $(this).val('');
+        });
+        $('#remote_dbh').focus(function() {
+          if ($(this).val() == rsHn) $(this).val('');
+        });
+        $('#adm_dbp_confirm').blur(function() {
+          if (!validatePass()) {
+            alert('passwords don\'t match, or both are empty!');
+          }
+        });
+        $('#default_save_stateDB').focus(function() {
+          $('#gcSessionDir').attr('disabled', 'disabled');
+        });
+        $('#default_save_stateSession').focus(function() {
+          $('#gcSessionDir').attr('disabled', '');
+        });
+        $('#func').click(function() {
+          if (confirm("You are about to over-write the configuration file.\nIncorrect or incomplete data will cause errors.\nAre you sure you wish to continue?")) {
+            $("#generalConfig").validate({
+              rules: {
+                adm_dbu: "required",
+                adm_dbp: "required",
+                adm_dbp_confirm: {
+                  equalTo: "#adm_dbp"
+                }
+              }
+            });
+          }
+        });
+       $('#botNames').change(function() {
+          $('#default_bot_id').removeOption(/./);
+          var temp = $(this).val();
+          var botNames = temp.split("\n");
+          var totalBotCount = botNames.length;
+          //alert('Number of bots: ' + totalBotCount);
+          $('#bot_count').val(totalBotCount);
+          for (var name in botNames) {
+            $('#default_bot_id').addOption((name * 1) + 1, botNames[name]);
+          }
+          $('#default_bot_id').selectOptions('1');
+        });
+        $('#helpLink1').click(function(e) {
+          e.preventDefault();
+          var url = 'help.php?page=1';
+          helpPopups(url);
+        });
+        $('span.helpButton').attr('title','Click here to get help or the current item.');
+        $('span.helpButton').click(function() {
+          //alert($(this).attr('id'));
+          var tmpHash = $(this).attr('id');
+          hash = tmpHash.replace('hb_','');
+          url = 'help.php?page=1#' + hash;
+          helpPopups(url);
+        });
+      });
+
+      function buildSelect(id) {
+        var timezone = determine_timezone().timezone;
+        var thisLocale = (id == 'lsTZ') ? timezone.olson_tz : rsTzVal;
+        var label = '#' + id;
+        for(var tz in olson.timezones) {
+          var tmpTZ = olson.timezones[tz];
+          var val = tmpTZ.olson_tz;
+          $(label).addOption(val, val);
+        }
+        $(label).selectOptions(thisLocale);
+      }
+
+      function helpPopups (url) {
+        var options = 'left=150,top=100,width=800,height=600,scrollbars=1';
+        if (helpWindow == null || helpWindow.closed) {
+          helpWindow = window.open(url,'helpWindow',options,true);
+          helpWindow.highlight();
+        }
+        else if (helpWindow.location == null) {
+          helpWindow.close();
+          helpWindow = null;
+          helpPopups (url);
+        }
+        else {
+          helpWindow.location.replace(url);
+          helpWindow.focus();
+          helpWindow.highlight();
+        }
+      }
+
+      function validatePass() {
+        var pw1 = $('#adm_dbp').val();
+        var pw2 = $('#adm_dbp_confirm').val();
+        var out = true;
+        out = ((pw1 != '') && (pw1 == pw2));
+        return out;
+      }
+
+
+
+
+    </script>
+<!-- Section jQuery1 End -->
+<!-- Section jQuery2 Start -->
+    <script type="text/javascript" src="../scripts/jquery.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        var eSize = Math.round($(window).width() * 0.065) - 5;
+        $('input[type="file"]').attr("size",eSize);
+      });
+    </script>
+<!-- Section jQuery2 End -->
+<!-- Section GeneralConfig Start -->
+  <form name="generalConfig" id="generalConfig" action="[PHP_SELF]" method="post">
+    <table width="98%" cellpadding="2" cellspacing="0">
+      <tr>
+        <td colspan="4">
+          <a href="#" id="helpLink1" title="Get help for this page" name="helpLink1">Help!</a>
+        </td>
+      </tr>
+            <tr>
+              <td class="bold big center" colspan="2">General Configuration:</td>
+              <td colspan="2" style="text-align: center"><strong>Database Server Config</strong></td>
+            </tr>
+            <tr>
+              <td width="25%"><label for="domain_name"><span class="label">Domain Name<span style="float:right" class="helpButton" id="hb_domain_name"> </span></span></label></td>
+              <td width="25%"><span class="formw"><input name="domain_name" id="domain_name" value="[domain_name]" /></span></td>
+              <td width="25%"><label for="local_dbh"><span class="label">Local Database Host Name <span style="float:right" class="helpButton" id="hb_local_dbh"> </span></span></label></td>
+              <td width="25%"><span class="formw"><input name="local_dbh" id="local_dbh" value="[local_dbh]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="alternate_local_server_name"><span class="label">Alternate Local Server Name<span class="red">#</span><span style="float:right" class="helpButton" id="hb_alternate_local_server_name"> </span></span></label></td>
+              <td><span class="formw"><input name="alternate_local_server_name" id="alternate_local_server_name" value="[alternate_local_server_name]" /></span></td>
+              <td><label for="local_dbPort"><span class="label">Local Database Port <span style="float:right" class="helpButton" id="hb_local_dbPort"> </span></span></label></td>
+              <td><span class="formw"><input name="local_dbPort" id="local_dbPort" value="[local_dbPort]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="bot_count"><span class="label">Number of bots<span style="float:right" class="helpButton" id="hb_bot_count"> </span></span></label></td>
+              <td><span class="formw"><input name="bot_count" id="bot_count" /></span></td>
+              <td><label for="local_dbn"><span class="label">Local Database Name <span style="float:right" class="helpButton" id="hb_local_dbn"> </span></span></label></td>
+              <td><span class="formw"><input name="local_dbn" id="local_dbn" value="[local_dbn]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="botNames"><span class="label">Bot Names <span class="red">*</span><span style="float:right" class="helpButton" id="hb_botNames"> </span></span></label></td>
+              <td><span class="formw"><textarea name="botNames" id="botNames" rows="1">myBot</textarea></span></td>
+              <td><label for="local_dbu"><span class="label">Local Database Username <span style="float:right" class="helpButton" id="hb_local_dbu"> </span></span></label></td>
+              <td><span class="formw"><input name="local_dbu" id="local_dbu" value="[local_dbu]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_bot_id"><span class="label">Name of the default bot<span style="float:right" class="helpButton" id="hb_default_bot_id"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="default_bot_id" id="default_bot_id">
+                  </select>
+                </span>
+              </td>
+              <td><label for="local_dbp"><span class="label">Local Database Password <span style="float:right" class="helpButton" id="hb_local_dbp"> </span></span></label></td>
+              <td><span class="formw"><input name="local_dbp" id="local_dbp" value="[local_dbp]" /></span></td>
+            </tr>
+            <tr>
+              <td colspan="2" class="bold center" >Botmaster Info:</td>
+              <td><label for="lsTZ"><span class="label">Local Database Timezone<span style="float:right" class="helpButton" id="hb_lsTZ"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="lsTZ" id="lsTZ">
+                  </select>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="adm_dbu"><span class="label">Admin User Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbu"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbu" id="adm_dbu" value="[adm_dbu]" /></span></td>
+              <td class="bold center" colspan="2"><b>Remote Database Data</b></td>
+            </tr>
+            <tr>
+              <td><label for="adm_dbp"><span class="label">Admin Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbp" id="adm_dbp" type="password" /></span></td>
+              <td><label for="remote_dbh"><span class="label">Remote Database Host Name <span style="float:right" class="helpButton" id="hb_remote_dbh"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbh" id="remote_dbh" value="[remotehost]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="adm_dbp_confirm"><span class="label">Confirm Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp_confirm"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></span></td>
+              <td><label for="remote_dbPort"><span class="label">Remote Database Port <span style="float:right" class="helpButton" id="hb_remote_dbPort"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbPort" id="remote_dbPort" value="[remote_dbPort]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="botmaster_name"><span class="label">Your Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_botmaster_name"> </span></span></label></td>
+              <td><span class="formw"><input name="botmaster_name" id="botmaster_name" value="[botmaster_name]" /></span></td>
+              <td><label for="remote_dbn"><span class="label">Remote Database Name <span style="float:right" class="helpButton" id="hb_remote_dbn"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbn" id="remote_dbn" value="[remote_dbn]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_debugemail"><span class="label">Email Address <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_default_debugemail"> </span></span></label></td>
+              <td><span class="formw"><input name="default_debugemail" id="default_debugemail" value="[default_debugemail]" /></span></td>
+              <td><label for="remote_dbu"><span class="label">Remote Database Username <span style="float:right" class="helpButton" id="hb_remote_dbu"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbu" id="remote_dbu" value="[remote_dbu]" /></span></td>
+            </tr>
+            <tr>
+              <td colspan="2" class="bold center">Debugging Options:</td>
+              <td><label for="remote_dbp"><span class="label">Remote Database Password <span style="float:right" class="helpButton" id="hb_remote_dbp"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbp" id="remote_dbp" value="[remote_dbp]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_debugshow"><span class="label">Debug Level:<span style="float:right" class="helpButton" id="hb_default_debugshow"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="default_debugshow" id="default_debugshow" size="1">
+                    <option value="0" selected="selected">Nothing</option>
+                    <option value="1">General</option>
+                    <option value="2">General/SQL</option>
+                    <option value="3">Everything</option>
+                  </select>
+                </span>
+              </td>
+              <td><label for="rsTZ"><span class="label">Remote Database Timezone <span style="float:right" class="helpButton" id="hb_rsTZ"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                <select name="rsTZ" id="rsTZ">
+                </select>
+              </span>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="label">Debugging output method<span style="float:right" class="helpButton" id="hb_default_debugmode"> </span></span></td>
+              <td>
+                <span class="formw">
+                  <label for="default_debugmodeSource"><input type="radio" class="radio" name="default_debugmode" value="0" id="default_debugmodeSource" />Show in Source</label>
+                  <label for="default_debugmodeFile"><input type="radio" class="radio" name="default_debugmode" value="1" id="default_debugmodeFile" checked="checked" />File (default)</label>
+                  <label for="default_debugmodeDisplay"><input type="radio" class="radio" name="default_debugmode" value="2" id="default_debugmodeDisplay" />Display</label>
+                  <label for="default_debugmodeEmail"><input type="radio" class="radio" name="default_debugmode" value="3" id="default_debugmodeEmail" />Email</label>
+                </span>
+              </td>
+              <td colspan="2" rowspan="7" id="notes">[notes]</td>
+            </tr>
+            <tr>
+              <td><label for="default_save_state"><span class="label">Save-State<span style="float:right" class="helpButton" id="hb_default_save_state"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                  <label for="default_save_stateSession"><input type="radio" class="radio" name="default_save_state" id="default_save_stateSession" checked="checked" value="session" />Session (default)</label>
+                  <label for="default_save_stateDB"><input type="radio" class="radio" name="default_save_state" id="default_save_stateDB" value="database" />Database</label>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="default_format"><span class="label">Response Format<span style="float:right" class="helpButton" id="hb_default_format"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="default_format" id="default_format" size="1">
+                    <option value="html" selected="selected">HTML</option>
+                    <option value="json">JSON</option>
+                    <option value="xml">XML</option>
+                  </select>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="error_response"><span class="label">Error response string<span style="float:right" class="helpButton" id="hb_error_response"> </span></span></label></td>
+              <td><span class="formw"><input class="wide" name="error_response" id="error_response" value="[error_response]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_pattern"><span class="label">Default pickup line pattern<span style="float:right" class="helpButton" id="hb_default_pattern"> </span></span></label></td>
+              <td><span class="formw"><input name="default_pattern" id="default_pattern" value="[default_pattern]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_conversation_lines"><span class="label">Chat line count<span style="float:right" class="helpButton" id="hb_default_conversation_lines"> </span></span></label></td>
+              <td><span class="formw"><input name="default_conversation_lines" id="default_conversation_lines" value="[default_conversation_lines]" /></span></td>
+            </tr>
+            <tr>
+              <td><label for="default_remember_up_to"><span class="label">History count<span style="float:right" class="helpButton" id="hb_default_remember_up_to"> </span></span></label></td>
+              <td><span class="formw"><input name="default_remember_up_to" id="default_remember_up_to" value="[default_remember_up_to]" /></span></td>
+            </tr>
+            <tr>
+              <td colspan="4" class="center">
+                <input name="page" value="2" type="hidden">
+                <input name="func" value="Save" type="hidden">
+                <input id="func" type="submit" value="Save">
+              </td>
+            </tr>
+    </table>
+  </form>
+<!-- Section GeneralConfig End -->
+<!-- Section AIMLConfig Start -->
+        <div class="fullSize">
+          <form name="botConfig" action="[PHP_SELF]" method="POST" enctype="multipart/form-data">
+            <div class="row bold center">Individual Bot Configuration</div>
+            [BotsTableForm]
+            <div class="row">&nbsp;</div>
+            [SubmitButton]
+            <div class="row">&nbsp;</div>
+          </form>
+          </div>
+<!-- Section AIMLConfig End -->
+<!-- Section SubmitButton Start -->
+              <div class="row">
+                <label for="func"><span class="label"><b>Save this page</b></span></label>
+                <span class="formw">
+                  <input type="hidden" name="page" value="[nextPage]" />
+                  <input type="hidden" name="func" value="Save" />
+                  <input type="submit" id="func" value="Submit" />
+                </span>
+              </div>
+<!-- Section SubmitButton End -->
+<!-- Section Page 1 Notes Start -->
+            <div class="row"><span class="red"># </span>Note: This is generally the server computer's local network name.</div>
+            <div class="row"><span class="red">* </span>Note: Place each bot name on a separate line. At least one name is required.</div>
+<!-- Section Page 1 Notes End -->
+<!-- Section Page 2 Notes Start -->
+<!-- Section Page 2 Notes End -->
+<!-- Section Page 3 Notes Start -->
+            <div class="row">
+              &nbsp; The configuration for both the bot and the database are complete,
+              but you now need to upload your bot's AIML categories. Please log into the
+              <a href="../admin/">Admin Page</a> to complete the process.
+            </div>
+            <div class="row"><!-- spacer div --></div>
+            <div class="row">
+              <div class="red bold">NOTE: </div>If you wish to use a different account
+              for your Program O Admin user, then you will need to edit the configuration
+              file manually. If you have any questions about this, or anything else about
+              Program O, please visit the forums at <a href="http://forum.program-o.com" target="blank">http://forum.program-o.com</a>.
+            </div>
+<!-- Section Page 3 Notes End -->
+<!-- Section BotsTableForm Start -->
+            <div class="row bold center"><b>Bot Info for [current_bot_name]</b></div>
+            <div class="row">
+              <label for="bot_name_[bot_ID]">
+                <span class="label">Bot Name:</span>
+              </label>
+              <span class="formw">
+                <input name="bot_name_[bot_ID]" id="bot_name_[bot_ID]" value="[current_bot_name]" />
+              </span>
+            </div>
+            <div class="row">
+              <label for="bot_desc_[bot_ID]">
+                <span class="label">Bot Description:</span>
+              </label>
+              <span class="formxw">
+                <input name="bot_desc_[bot_ID]" id="bot_desc_[bot_ID]">
+              </span>
+            </div>
+            <div class="row">
+              <label for="bot_active_[bot_ID]">
+                <span class="label">Active?</span>
+              </label>
+              <span class="formxw">
+                <input type="checkbox" name="bot_active_[bot_ID]" id="bot_active_[bot_ID]" value="1" checked="checked" />
+              </span>
+            </div>
+            <div class="row">
+              <label for="format_[bot_ID]">
+                <span class="label">Response Format:</span>
+              </label>
+              <span class="formw">
+                <select name="format_[bot_ID]" id="format_[bot_ID]" size="1">
+                  <option value="html" selected="selected">HTML</option>
+                  <option value="json">JSON</option>
+                  <option value="xml">XML</option>
+                </select>
+              </span>
+            </div>
+            <div class="row">
+              <label for="use_aiml_code_[bot_ID]">
+                <span class="label">Use Stored PHP Code from DB?</span>
+              </label>
+              <span class="formxw">
+                <input type="checkbox" name="use_aiml_code_[bot_ID]" id="use_aiml_code_[bot_ID]" value="1"[cur_use_aiml_code_checked] />
+              </span>
+            </div>
+            <div class="row">
+              <label for="update_aiml_code_[bot_ID]">
+                <span class="label">Store PHP code in DB?</span>
+              </label>
+              <span class="formxw">
+                <input type="checkbox" name="update_aiml_code_[bot_ID]" id="update_aiml_code_[bot_ID]" value="1"[cur_update_aiml_code_checked] />
+              </span>
+            </div>
+            <div class="row">
+              <label for="save_state_[bot_ID]">
+                <span class="label">User Variable Storage:</span>
+              </label>
+              <span class="formw">
+                <select name="save_state_[bot_ID]" id="save_state_[bot_ID]" size="1">
+                  <option value="session" selected="selected">Session</option>
+                  <option value="database">Database</option>
+                </select>
+              </span>
+            </div>
+            <div class="row">
+              <label for="conversation_lines_[bot_ID]">
+                <span class="label">Conversation Lines:</span>
+              </label>
+              <span class="formw">
+                <input name="conversation_lines_[bot_ID]" id="conversation_lines_[bot_ID]" value="[cl_value]" />
+              </span>
+            </div>
+            <div class="row">
+              <label for="remember_up_to_[bot_ID]">
+                <span class="label">Lines Remembered (history):</span>
+              </label>
+              <span class="formw">
+                <input name="remember_up_to_[bot_ID]" id="remember_up_to_[bot_ID]" value="10" />
+              </span>
+            </div>
+<!-- Section BotsTableForm End -->
+<!-- Section InstallComplete Start -->
+           <div class="row bold fullSize center shadowBorderOutset">Installation Complete!</div>
+           [notes]
+<!-- Section InstallComplete End -->
+<!-- Section InstallError Start -->
+           <div class="row bold fullSize center shadowBorderOutset">Installation Failed!</div>
+           [errorMessage]
+<!-- Section InstallError End -->
+<!-- Section DBCreationError Start -->
+            <div class="row">
+              <span class="red bold">WARNING! </span>
+              <span>
+                Could not create the database. Please check your database settings and make any
+                necessary corrections. Some database hosts do not allow users to directly create
+                new databases. You may need to contact your hosting provider to learn how to set
+                up a new database. If you have questions about this, or anytyhing else regarding
+                Program O, please visit the forums at <a href="http://www.program-o.com">www.program-o.com</a>
+              </span>
+            </div>
+<!-- Section DBCreationError End -->

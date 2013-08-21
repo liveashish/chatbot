@@ -1,0 +1,147 @@
+
+	body{
+		font-family: sans-serif; 
+		font-size:12px;
+	}
+
+	.man {
+		background:url("small_man.png");
+		height:194px;
+		width:133px;
+		float:right;
+		}
+
+	.dog {
+		background:url("small_dog.png");
+		height:198px;
+		width:278px;
+		float:left;
+		}	
+
+	.manspeech {
+		height:200px;
+		width:133px;
+		float:right;
+		position:relative;
+		display:block;
+		min-height:14px;
+		}
+
+	.dogspeech {
+		height:200px;
+		width:278px;
+		float:left;
+		position:relative;
+		min-height:14px;
+		}
+
+	.botsay{
+	    overflow: auto;
+      	max-height: 150px;
+      	color:red;
+      	font-weight:bold;
+	}
+
+	.usersay{
+	    overflow: auto;
+      	max-height: 150px;
+      	color:green;
+      	font-weight:bold;
+	}
+
+	.centerthis {
+		margin: 0 auto;
+		width:450px;
+		}	
+	.clearthis {
+		clear:both;
+		}
+
+
+
+
+
+/* ============================================================================================================================
+== BUBBLE WITH A BORDER AND TRIANGLE
+** ============================================================================================================================ */
+
+/* THE SPEECH BUBBLE
+------------------------------------------------------------------------------------------------------------------------------- */
+
+.triangle-border {
+	padding:5px;
+	margin:0.5em 0 1em;
+	border:5px solid #5a8f00;
+	color:#333;
+	background:#fff;
+	/* css3 */
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
+	position: absolute; bottom: 0;
+	width:95%;
+}
+
+.blue{
+	border:5px solid lightblue;
+}
+
+.orange{
+	border:5px solid orange;
+}
+
+/* Variant : for left positioned triangle
+------------------------------------------ */
+
+.triangle-border.left {
+	margin-left:3px;
+}
+
+/* Variant : for right positioned triangle
+------------------------------------------ */
+
+.triangle-border.right {
+	margin-right:3px;
+}
+
+/* THE TRIANGLE
+------------------------------------------------------------------------------------------------------------------------------- */
+
+.triangle-border:before {
+	content:"";
+	position:absolute;
+	bottom:-20px; /* value = - border-top-width - border-bottom-width */
+	left:40px; /* controls horizontal position */
+    border-width:20px 20px 0;
+	border-style:solid;
+    border-color:#000 transparent;
+    /* reduce the damage in FF3.0 */
+    display:block; 
+    width:0;
+}
+
+.blue:before {
+	border-color:lightblue transparent;
+}
+
+.orange:before {
+	border-color:orange transparent;
+}
+
+
+
+/* creates the smaller  triangle */
+.triangle-border:after {
+	content:"";
+	position:absolute;
+	bottom:-13px; /* value = - border-top-width - border-bottom-width */
+	left:47px; /* value = (:before left) + (:before border-left) - (:after border-left) */
+	border-width:13px 13px 0;
+	border-style:solid;
+	border-color:#fff transparent;
+    /* reduce the damage in FF3.0 */
+    display:block; 
+    width:0;
+}
+
+

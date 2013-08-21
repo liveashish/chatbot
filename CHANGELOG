@@ -1,0 +1,56 @@
+/***************************************
+* http://www.program-o.com
+* PROGRAM O
+* Version: 2.0.9
+* FILE: CHANGELOG
+* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
+* DATE: 01-02-2013
+* DETAILS: Describes the version changes in Program O
+***************************************/
+
+Version History:
+
+2.0.9   Feature Update
+            1.) Added a function to the admin page to poll GitHub for the current release version, and notify
+                the botmaster if a new version is available, providing a link to the latest version.
+
+2.0.8   Performed the following upgrades/fixes:
+            1.) Added version information to the admin page. so that botmasters can see at a glance which version
+                they're using. This is a prelude to a new "version check" feature that I'm working on.
+            2.) Corrected a bug where changing the bot's default page format wasn't being reflected in the config
+                file. PLEASE NOTE that if you have several chatbots, this will affect ALL of them, but if that's
+                the case, you shouldn't be relying on the default chatbot page anyway.
+
+2.0.7   Two major changes, this time:
+            1.) Removed some settings from the install script that had been causing new chatbots to
+              fail to respond. These settings are still available in the admin pages, but during installation
+              are given default values.
+            2.) Added support for uploading ZIP file archives of AIML files, to make the process of adding
+              AIML files less faster and less tedious. the size limit for uploading files is still 2MB,
+              but a 2MB ZIP file can hold a LOT of AIML files. 
+
+2.0.6   Performed the following upgrades/fixes:
+            1.) Corrected typographical errors in several files, both in the admin pages, and in the config files.
+            2.) Consolidated error logging, adding a /logs/ folder to the base directory. Error logs are
+              also named for the pages where the errors occur. (e.g. admin-error.log for the admin pages,
+              install-error.log, etc.)
+            3.) Updated the addon checkForBan, activating it, and adding functionality to add banned users
+              to the list of banned IP addresses. It's still up to the botmaster to implement banning in
+              their AIML files. To ban a user, insert the following into the apropriate AIML template:
+              <ban><get name="ip_address" /></ban>
+          For further assistance, please check out the Program O Support Forums.
+
+2.0.5   Fixed a bug where uploaded AIML files were not being added to the DB, even if they passed validation.
+        Also added the variable $default_charset to allow character encoding other than UTF-8 for both AIML
+        files and chatbot pages. Further, experimental support for international characters has been added.
+        This is far from it's "final" implementation, but we hope that it's a start.
+
+2.0.4   Fixed a bug in the debugging functions that caused empty debugging files to be created on non-Windows systems
+
+2.0.3   Added simple AIML validation to the upload script, and restyled the admin pages accordingly
+
+2.0.2   Unspecified Bug fixes
+
+2.0.1   Unspecified Bug fixes
+
+2.0.0   Initial Release

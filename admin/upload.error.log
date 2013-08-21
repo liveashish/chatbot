@@ -1,0 +1,4 @@
+[05-Feb-2013 08:25:24] PHP Notice:  Undefined index: name in E:\xampp\htdocs\chatbot\admin\index.php on line 245
+[05-Feb-2013 08:25:24] PHP Notice:  Undefined index: lip in E:\xampp\htdocs\chatbot\admin\index.php on line 246
+[05-Feb-2013 08:25:24] PHP Notice:  Undefined index: lastlogin in E:\xampp\htdocs\chatbot\admin\index.php on line 247
+[05-Feb-2013 08:25:24] PHP Notice:  Undefined index: llastlogin in E:\xampp\htdocs\chatbot\admin\index.php on line 248

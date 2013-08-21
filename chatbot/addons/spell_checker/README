@@ -1,0 +1,11 @@
+/***************************************
+* www.program-o.com
+* PROGRAM O 
+* Version: 2.0.5
+* FILE: spell_checker/README
+* AUTHOR: ELIZABETH PERREAU
+* DATE: MAY 4TH 2011
+* DETAILS: spell checker README
+***************************************/
+
+This addon for Program O spell checks the users inputs before they are sent to the database to look for an aiml match

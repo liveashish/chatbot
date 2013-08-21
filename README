@@ -1,0 +1,55 @@
+/********************************************************
+* http://www.program-o.com
+* PROGRAM O 
+* Version: 2.0.9
+* README
+********************************************************/
+
+Introduction
+---------------------------------------------------------
+Program O is an AIML interpretor written in PHP
+The bot engine sits in the /chatbot/ directory
+The admin area can be found in the /admin/ directory
+Functions used by the bot and the admin area are in the /library/ directory
+Any optional addons are found in the /chatbot/addons/ directory
+
+Configuration
+---------------------------------------------------------
+v2.0.1 has support for multiple bots
+Configuration of the individual bots is done from inside the admin area.
+Bot specific variables are stored in the database.
+Configuration of Program O itself is done in /config/global_config.php
+
+Using the bot
+---------------------------------------------------------
+After installation you can chat to Program O in one of 3 ways
+-HTML form (example in /gui/plain/index.php)
+-HTML form using AJAX (example in /gui/jquery/index.php)
+-send XML using CURL (return response in XML or JSON) (example in /gui/xml/index.php)
+
+Upgrade
+---------------------------------------------------------
+If you are upgrading from v1 you will need to make the following changes to the db
+Back up your old files then overwrite with the new ones
+
+Clean install
+---------------------------------------------------------
+v2.0.1 has an automatic installer for clean installation.
+Simply point your web browser to your freshly uploaded
+Program O directory to run the install script. Then
+follow the instructions on the page. The installer is
+designed to only run once.
+
+Please note that the installer script will NOT  create your
+database for you, nor will it install your bot's AIML files.
+The database, along with the username/password used to
+access it, needs to be created in advance. See the file
+fresh_install_README.txt for more information.
+
+After you create the database, and once you complete the
+installation process, simply go to your new Program O
+admin page (e.g. http://www.example.com/ProgramO/admin)
+and log in using the admin credentials you provided during
+the install process. Then select "Upload AIML" from the
+navigation link on the left and upload your AIML files.
+Then sit back and enjoy your new bot!
